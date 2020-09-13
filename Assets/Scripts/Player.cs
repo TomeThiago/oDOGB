@@ -5,7 +5,8 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
-{
+{//ODOGB
+
     public float speed;
     public float jump;
     public int life;
@@ -25,7 +26,8 @@ public class Player : MonoBehaviour
     public bool imunidade;
     private float i;
     public int vidaMáxima;
-    
+
+    public float tempo;
     //Fazer ele ganhar imunidade após tomar dano
     //Fazer um esquema de caso o player n esteja com a vida máxima ele ganhe vida na fase, e caso ele esteja ele ganhe uma "continue" a mais
 
@@ -45,29 +47,30 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-     //movimento horizontal
+        //movimento horizontal
         float movimento = Input.GetAxis("Horizontal");
         Rigidbody2D rigidbody = GetComponent<Rigidbody2D>();
         rigidbody.velocity = new Vector2(movimento * speed, rigidbody.velocity.y);
-     //Inversão do sprite
+
+        //Inversão do sprite
         if (movimento > 0)
         {
             GetComponent<SpriteRenderer>().flipX = false;
-        } 
+        }
         if (movimento < 0)
         {
             GetComponent<SpriteRenderer>().flipX = true;
         }
 
-     // Pulo do personagem
+        // Pulo do personagem
         if (Input.GetKeyDown(KeyCode.Space) && Inground == true)
         {
             GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jump));
             RaycastHit2D hit = Physics2D.Raycast(transform.position, -Vector2.up, 0.5f);
 
-            Inground = hit.collider.tag == "tagPlataforma"; 
+            Inground = hit.collider.tag == "tagPlataforma";
         }
-     //Som do personagem andando
+        //Som do personagem andando
         if (movimento > 0 || movimento < 0)
         {
             GetComponent<Animator>().SetBool("Walking", true);
@@ -79,7 +82,7 @@ public class Player : MonoBehaviour
             GetComponent<AudioSource>().Play();
             GetComponent<AudioSource>().loop = true;
         }
-     //Verifica se o personagem está no chão
+        //Verifica se o personagem está no chão
         if (Inground)
         {
             GetComponent<Animator>().SetBool("Pulando", false);
@@ -88,26 +91,20 @@ public class Player : MonoBehaviour
         {
             GetComponent<Animator>().SetBool("Pulando", true);
         }
-        
+
         if (GetComponent<SpriteRenderer>().sprite.Equals("baril_pgn_6"))
         {
-            Debug.Log("O barril explodiu");
+            //Debug.Log("O barril explodiu");
         }
 
-        // if (Input.GetKeyDown(KeyCode.E))
-        //{
+        //Criar a bala
+        if (Input.GetKeyDown(KeyCode.E))
+        {
 
-        // GameObject balarevolver = (GameObject) Instantiate(Bala, posição, Quaternion.Euler(rotação)) ;
-        // timer = 0;
+            GameObject.Instantiate(this.Bala, this.transform.position, Quaternion.identity);
 
-        //}
-        // timer += Time.deltaTime;
-        // if (timer >= tempobala)
-        // {
-        //     Debug.Log("Passou 2 segundos");
-        //     Destroy(Bala.gameObject);
-        // }
-    
+        }
+
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             speed = 8;
@@ -118,18 +115,17 @@ public class Player : MonoBehaviour
         }
 
 
-
     }
 
     public void OnCollisionEnter2D(Collision2D collision2D)
     {
-        Debug.Log("Colidiu com" + collision2D.gameObject.tag);
+        //Debug.Log("Colidiu com" + collision2D.gameObject.tag);
         // Testa se a tag que o player está colidindo é plataformas, se for, a variavel no chão, é verdadeira
         if (collision2D.gameObject.CompareTag("Plataformas"))
         {
             Inground = true;
         }
-         
+
         if (collision2D.gameObject.CompareTag("Espinhos"))
         {
             perderVida();
@@ -148,17 +144,13 @@ public class Player : MonoBehaviour
 
     public void OnCollisionExit2D(Collision2D collision2D)
     {
-        Debug.Log("Deixou de colidir com " + collision2D.gameObject.tag);
+        //"Descolisão" do chão
+        //Debug.Log("Deixou de colidir com " + collision2D.gameObject.tag);
 
         if (collision2D.gameObject.CompareTag("Plataformas"))
         {
             Inground = false;
         }
-
-
-
-
-
 
     }
 
@@ -167,17 +159,16 @@ public class Player : MonoBehaviour
         if (collision2D.gameObject.CompareTag("Armas"))
         {
             Destroy(collision2D.gameObject);
-            //Transform pf = GameObject.Find("Armas").transform;
-            //Transform revo = pf.Find("revorvere");
-            
 
         }
-        
+
+        //Define o GameObject que será o último checkpoint
         if (collision2D.gameObject.CompareTag("Checkpoint"))
         {
             LastCheckpoint = collision2D.gameObject;
         }
 
+        //Ganhar pontos
         if (collision2D.gameObject.CompareTag("Points"))
         {
             pontuação += 1;
@@ -185,9 +176,10 @@ public class Player : MonoBehaviour
             Destroy(collision2D.gameObject);
         }
 
+        //Regenera vida                                                                                                                                                                                                                     
         if (collision2D.gameObject.CompareTag("1up"))
         {
-            if(life != vidaMáxima)
+            if (life != vidaMáxima)
             {
                 life += 1;
                 Destroy(collision2D.gameObject);
@@ -210,13 +202,12 @@ public class Player : MonoBehaviour
             }
         }
 
+        //Apenas acontece em Triggers 
         if (collision2D.gameObject.CompareTag("HK"))
         {
-            transform.position = LastCheckpoint.transform.position;
-            life = 3;
-            GameObject.Find("Vida").gameObject.GetComponent<Image>().enabled = true;
-            GameObject.Find("Vida2").gameObject.GetComponent<Image>().enabled = true;
-            GameObject.Find("Vida3").gameObject.GetComponent<Image>().enabled = true;
+            //transform.position = LastCheckpoint.transform.position;
+            transform.position = resetar();
+            //O personagem volta pro ultimo checkpoint
         }
 
 
@@ -227,61 +218,65 @@ public class Player : MonoBehaviour
 
     public void OnTriggerExit2D(Collider2D collision2D)
     {
-        
-
-
-
-
-
-
 
     }
 
 
     private void perderVida()
     {
-            if(life == 3 && imunidade == false)
-            {
-                // Destroy(GameObject.Find("Vida3").gameObject);
-                GameObject.Find("Vida3").gameObject.GetComponent<Image>().enabled = false;
-            }
-            else if(life == 2 && imunidade == false)
-            {
-                //Destroy(GameObject.Find("Vida2").gameObject);
-                GameObject.Find("Vida2").gameObject.GetComponent<Image>().enabled = false;
-            }
-            else if(life == 1 && imunidade == false)
-            {
-                //Destroy(GameObject.Find("Vida").gameObject);
-                GameObject.Find("Vida").gameObject.GetComponent<Image>().enabled = false;
-            }
-
-            life -= 1;
-            for (i = 0; i <= 4; i += Time.deltaTime)
-            {
-                imunidade = true;
-            }
-
-            imunidade = false;
-            if (life <= 0)
-            {
-                //restartCurrentScene();
-                transform.position = LastCheckpoint.transform.position;
-                life = 3;
-                GameObject.Find("Vida").gameObject.GetComponent<Image>().enabled = true;
-                GameObject.Find("Vida2").gameObject.GetComponent<Image>().enabled = true;
-                GameObject.Find("Vida3").gameObject.GetComponent<Image>().enabled = true;
-            }
-
-         /*void restartCurrentScene()
+        if (life == 3 && imunidade == false)
         {
-            Scene scene = SceneManager.GetActiveScene();
-            SceneManager.LoadScene(scene.name);
+            // Destroy(GameObject.Find("Vida3").gameObject);
+            GameObject.Find("Vida3").gameObject.GetComponent<Image>().enabled = false;
         }
-        */
+        else if (life == 2 && imunidade == false)
+        {
+            //Destroy(GameObject.Find("Vida2").gameObject);
+            GameObject.Find("Vida2").gameObject.GetComponent<Image>().enabled = false;
+        }
+        else if (life == 1 && imunidade == false)
+        {
+            //Destroy(GameObject.Find("Vida").gameObject);
+            GameObject.Find("Vida").gameObject.GetComponent<Image>().enabled = false;
+        }
+
+        life -= 1;
+
+        //Chamando a função para esperar o tempo da imunidade.
+        StartCoroutine(wait());
+        
+
+        if (life <= 0)
+        {
+            //restartCurrentScene();
+            transform.position = resetar();
+        }
+
+        /*void restartCurrentScene()
+       {
+           Scene scene = SceneManager.GetActiveScene();
+           SceneManager.LoadScene(scene.name);
+       }
+       */
     }
 
+    private Vector3 resetar()
+    {
+        life = 3;
+        GameObject.Find("Vida").gameObject.GetComponent<Image>().enabled = true;
+        GameObject.Find("Vida2").gameObject.GetComponent<Image>().enabled = true;
+        GameObject.Find("Vida3").gameObject.GetComponent<Image>().enabled = true;
+        return LastCheckpoint.transform.position;
+    }
 
+    //Contagem de tempo
+    private IEnumerator wait()
+    {
+        WaitForSeconds wait = new WaitForSeconds(3f);
+        imunidade = true;
+        yield return wait;
+        imunidade = false;
+    }
 
 
 
