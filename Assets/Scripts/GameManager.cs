@@ -17,31 +17,17 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (IsPause == false && Input.GetKeyDown(KeyCode.P))
+
+        if (Input.GetKeyDown(KeyCode.P))
         {
-            Painelpausado.SetActive(true);
-            Time.timeScale = 0;
-            GameObject.Find("GameManager").GetComponent<AudioSource>().mute = true;
-            IsPause = true;
+
+            GameObject.Find("GameManager").GetComponent<AudioSource>().mute = !IsPause;
+            GameObject.Find("Player").GetComponent<AudioSource>().mute = !IsPause;
+            GameObject.Find("Pause").GetComponent<SpriteRenderer>().enabled = !IsPause;
+            Time.timeScale = IsPause ? 1 : 0;
+            IsPause = !IsPause;
+
         }
-        else if (IsPause == true && Input.GetKeyDown(KeyCode.P))
-        {
-            Painelpausado.SetActive(false);
-            Time.timeScale = 1;
-            GameObject.Find("GameManager").GetComponent<AudioSource>().mute = false;
-            IsPause = false;
-        }
-        
-
-
-        //if (Input.GetKeyDown(KeyCode.E))
-      //  {
-           // GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            //cube.transform.position = new Vector2(0, 0);
-       // }
-
-
-
     }
 
 

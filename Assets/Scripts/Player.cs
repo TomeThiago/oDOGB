@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Analytics;
 
 public class Player : MonoBehaviour
 {//ODOGB
@@ -30,7 +31,6 @@ public class Player : MonoBehaviour
     public float tempo;
     //Fazer ele ganhar imunidade após tomar dano
     //Fazer um esquema de caso o player n esteja com a vida máxima ele ganhe vida na fase, e caso ele esteja ele ganhe uma "continue" a mais
-
 
 
     // Start is called before the first frame update
@@ -66,9 +66,6 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && Inground == true)
         {
             GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jump));
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, -Vector2.up, 0.5f);
-
-            Inground = hit.collider.tag == "tagPlataforma";
         }
         //Som do personagem andando
         if (movimento > 0 || movimento < 0)
@@ -100,9 +97,7 @@ public class Player : MonoBehaviour
         //Criar a bala
         if (Input.GetKeyDown(KeyCode.E))
         {
-
             GameObject.Instantiate(this.Bala, this.transform.position, Quaternion.identity);
-
         }
 
         if (Input.GetKeyDown(KeyCode.LeftShift))
@@ -113,8 +108,7 @@ public class Player : MonoBehaviour
         {
             speed = 5;
         }
-
-
+        
     }
 
     public void OnCollisionEnter2D(Collision2D collision2D)
@@ -159,7 +153,6 @@ public class Player : MonoBehaviour
         if (collision2D.gameObject.CompareTag("Armas"))
         {
             Destroy(collision2D.gameObject);
-
         }
 
         //Define o GameObject que será o último checkpoint
@@ -179,27 +172,21 @@ public class Player : MonoBehaviour
         //Regenera vida                                                                                                                                                                                                                     
         if (collision2D.gameObject.CompareTag("1up"))
         {
+            //Se a vida for diferente da vida máxima o personagem ganha uma vida
             if (life != vidaMáxima)
             {
                 life += 1;
+                GameObject.Find("Vida" + life.ToString()).gameObject.GetComponent<Image>().enabled = true;
                 Destroy(collision2D.gameObject);
             }
+            //Caso contrário ele irá ganhar um ponto
             else
             {
                 pontuação += 1;
                 Pontos.text = pontuação.ToString();
                 Destroy(collision2D.gameObject);
             }
-            if (life == 3 && imunidade == false)
-            {
-                // Destroy(GameObject.Find("Vida3").gameObject);
-                GameObject.Find("Vida3").gameObject.GetComponent<Image>().enabled = true;
-            }
-            else if (life == 2 && imunidade == false)
-            {
-                //Destroy(GameObject.Find("Vida2").gameObject);
-                GameObject.Find("Vida2").gameObject.GetComponent<Image>().enabled = true;
-            }
+
         }
 
         //Apenas acontece em Triggers 
@@ -209,9 +196,6 @@ public class Player : MonoBehaviour
             transform.position = resetar();
             //O personagem volta pro ultimo checkpoint
         }
-
-
-
 
     }
 
@@ -224,20 +208,10 @@ public class Player : MonoBehaviour
 
     private void perderVida()
     {
-        if (life == 3 && imunidade == false)
+
+        if (imunidade == false)
         {
-            // Destroy(GameObject.Find("Vida3").gameObject);
-            GameObject.Find("Vida3").gameObject.GetComponent<Image>().enabled = false;
-        }
-        else if (life == 2 && imunidade == false)
-        {
-            //Destroy(GameObject.Find("Vida2").gameObject);
-            GameObject.Find("Vida2").gameObject.GetComponent<Image>().enabled = false;
-        }
-        else if (life == 1 && imunidade == false)
-        {
-            //Destroy(GameObject.Find("Vida").gameObject);
-            GameObject.Find("Vida").gameObject.GetComponent<Image>().enabled = false;
+            GameObject.Find("Vida" + life.ToString()).gameObject.GetComponent<Image>().enabled = false;
         }
 
         life -= 1;
@@ -245,7 +219,7 @@ public class Player : MonoBehaviour
         //Chamando a função para esperar o tempo da imunidade.
         StartCoroutine(wait());
         
-
+        //Mecânica de morte do personagem, teleporta ele para o último checkpoint
         if (life <= 0)
         {
             //restartCurrentScene();
@@ -262,11 +236,14 @@ public class Player : MonoBehaviour
 
     private Vector3 resetar()
     {
+
         life = 3;
-        GameObject.Find("Vida").gameObject.GetComponent<Image>().enabled = true;
-        GameObject.Find("Vida2").gameObject.GetComponent<Image>().enabled = true;
-        GameObject.Find("Vida3").gameObject.GetComponent<Image>().enabled = true;
+        for(int i = vidaMáxima; i > 0; i--)
+        {
+            GameObject.Find("Vida" + i.ToString()).gameObject.GetComponent<Image>().enabled = true;           
+        }
         return LastCheckpoint.transform.position;
+
     }
 
     //Contagem de tempo
