@@ -29,7 +29,7 @@ public class Player : MonoBehaviour
     public int vidaMáxima;
 
     public float tempo;
-    //Fazer ele ganhar imunidade após tomar dano
+
     //Fazer um esquema de caso o player n esteja com a vida máxima ele ganhe vida na fase, e caso ele esteja ele ganhe uma "continue" a mais
 
 
@@ -65,7 +65,8 @@ public class Player : MonoBehaviour
         // Pulo do personagem
         if (Input.GetKeyDown(KeyCode.Space) && Inground == true)
         {
-            GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jump));
+            rigidbody.velocity = Vector2.zero;
+            rigidbody.AddForce(new Vector2(0, jump));
         }
         //Som do personagem andando
         if (movimento > 0 || movimento < 0)
