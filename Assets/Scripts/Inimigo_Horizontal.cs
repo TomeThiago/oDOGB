@@ -67,8 +67,7 @@ public class Inimigo_Horizontal : MonoBehaviour
             GameObject.Find("Player").gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, 1000));
             if (lifemonster <= 0)
             {
-                Destroy(gameObject);
-                
+                Destroy(gameObject);   
             }
         }
     }

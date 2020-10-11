@@ -57,10 +57,12 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\Audioplayer.cs" />
+    <Compile Include="Assets\Scripts\TrocaFases.cs" />
     <Compile Include="Assets\Scripts\Player.cs" />
     <Compile Include="Assets\Scripts\Inimigo_Horizontal.cs" />
     <Compile Include="Assets\Scripts\Bala.cs" />
     <Compile Include="Assets\Scripts\Inimigo_Vertical.cs" />
+    <Compile Include="Assets\Scripts\InterfaceGrafica.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
