@@ -2,21 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Inimigo_Horizontal : MonoBehaviour
+public class InimigoHorizontal : MonoBehaviour
 {
     private float time = 0.00f;
     public float timer;
     public float speed;
 
-    
-    
     public float lifemonster;
+    private Player player;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        this.player = GameObject.FindObjectOfType<Player>();
     }
 
     // Update is called once per frame
@@ -29,8 +28,6 @@ public class Inimigo_Horizontal : MonoBehaviour
             time = 0.00f;
             Flip();
         }
-
-
     }
 
     private void Flip()
@@ -41,7 +38,6 @@ public class Inimigo_Horizontal : MonoBehaviour
 
     public void OnCollisionEnter2D(Collision2D collision2D)
     {
-
         // Faz que a bala ao bater no inimigo destrua o monstro
         if (collision2D.gameObject.CompareTag("Balarevolver"))
         {
@@ -53,22 +49,16 @@ public class Inimigo_Horizontal : MonoBehaviour
                 Destroy(gameObject);
             }
         }
-        
-      
-
-
     }
 
-    public void OnTriggerEnter2D(Collider2D collision2D)
+    public void PerderVida(int vidaPerdida)
     {
-        if (collision2D.gameObject.CompareTag("Danope"))
+        this.lifemonster -= vidaPerdida;
+        player.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        player.gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, 500));
+        if (lifemonster <= 0)
         {
-            lifemonster--;
-            GameObject.Find("Player").gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, 1000));
-            if (lifemonster <= 0)
-            {
-                Destroy(gameObject);   
-            }
+            Destroy(gameObject);
         }
     }
 

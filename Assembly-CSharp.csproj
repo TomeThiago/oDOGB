@@ -59,10 +59,11 @@
     <Compile Include="Assets\Scripts\Audioplayer.cs" />
     <Compile Include="Assets\Scripts\TrocaFases.cs" />
     <Compile Include="Assets\Scripts\Player.cs" />
-    <Compile Include="Assets\Scripts\Inimigo_Horizontal.cs" />
-    <Compile Include="Assets\Scripts\Bala.cs" />
-    <Compile Include="Assets\Scripts\Inimigo_Vertical.cs" />
+    <Compile Include="Assets\Scripts\InimigoHorizontal.cs" />
     <Compile Include="Assets\Scripts\InterfaceGrafica.cs" />
+    <Compile Include="Assets\Scripts\Bala.cs" />
+    <Compile Include="Assets\Scripts\InimigoVertical.cs" />
+    <Compile Include="Assets\Scripts\RayCasting.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

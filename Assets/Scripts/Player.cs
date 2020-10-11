@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,6 +28,10 @@ public class Player : MonoBehaviour
     public int vidaMáxima;
 
     public float tempo;
+    //OffSets para poder fazer um RayCasting que não colida com a próprio box collider do player
+    private float offSetX = 0.969f;
+    private float offSetY = 1.86f;
+    
 
     //Fazer um esquema de caso o player n esteja com a vida máxima ele ganhe vida na fase, e caso ele esteja ele ganhe uma "continue" a mais
 
@@ -44,9 +49,9 @@ public class Player : MonoBehaviour
         this.gameManager = GameObject.FindObjectOfType<GameManager>();
         
     }
-
+    
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         //movimento horizontal
         float movimento = Input.GetAxis("Horizontal");
@@ -99,7 +104,9 @@ public class Player : MonoBehaviour
         //Criar a bala
         if (Input.GetKeyDown(KeyCode.E))
         {
-            GameObject.Instantiate(this.Bala, this.transform.position, Quaternion.identity);
+            //OffSet feito para o personagem n ser empurrado pela bala quando ela for instânciada
+            Vector3 offsetPlayer = new Vector3(this.transform.position.x + 1.5f, this.transform.position.y, this.transform.position.z);
+            GameObject.Instantiate(this.Bala, offsetPlayer, Quaternion.identity);
         }
 
         if (Input.GetKeyDown(KeyCode.LeftShift))
@@ -110,7 +117,37 @@ public class Player : MonoBehaviour
         {
             speed = 5;
         }
+    }
 
+    //Código de RayCast 
+    //Depois fazer uma função pra resumir esse carai aqui
+    private void FixedUpdate()
+    {
+        RaycastHit2D hit;
+        float dist = 0.5f;
+        Vector2 vetor = new Vector2(this.transform.position.x, this.transform.position.y - 1.86f);
+        hit = Physics2D.Raycast(vetor, Vector2.down, dist);
+        Debug.DrawRay(vetor, hit.point);
+        if (hit.collider != null)
+        {
+            //Debug.Log(hit.collider.tag);
+            //Debug.Log(hit.collider.transform.position);
+            if (hit.collider.CompareTag("Monstros"))
+            {
+                try{
+                    InimigoVertical inimigo = hit.collider.gameObject.GetComponent<InimigoVertical>();
+                    inimigo.PerderVida(1);
+                }
+                catch (NullReferenceException)
+                {
+                    InimigoHorizontal inimigo = hit.collider.gameObject.GetComponent<InimigoHorizontal>();
+                    inimigo.PerderVida(1);
+                }
+                
+                Debug.Log("Colidiu");
+            }
+            
+        }
         
     }
 
@@ -128,10 +165,6 @@ public class Player : MonoBehaviour
             PerderVida();
         }
         //Printar que ele colidiu com o retangulo
-        if (collision2D.gameObject.CompareTag("DanoMH"))
-        {
-            PerderVida();
-        }
         if (collision2D.gameObject.CompareTag("Monstros"))
         {
             PerderVida();
@@ -162,8 +195,7 @@ public class Player : MonoBehaviour
         //Define o GameObject que será o último checkpoint
         if (collision2D.gameObject.CompareTag("Checkpoint"))
         {
-            LastCheckpoint = collision2D.gameObject;
-            
+            LastCheckpoint = collision2D.gameObject; 
         } 
 
         //Regenera vida                                                                                                                                                                                                                     

@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Inimigo_Vertical : MonoBehaviour
+public class InimigoVertical : MonoBehaviour
 {
 
 
     private float time = 0.00f;
     public float timer;
     public float speed;
-
+    private Player player;
 
 
     public float lifemonster;
@@ -17,7 +17,7 @@ public class Inimigo_Vertical : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        this.player = GameObject.FindObjectOfType<Player>();
     }
 
     // Update is called once per frame
@@ -54,23 +54,19 @@ public class Inimigo_Vertical : MonoBehaviour
             }
         }
 
-
-
-
     }
 
-    public void OnTriggerEnter2D(Collider2D collision2D)
+    public void PerderVida(int vidaPerdida)
     {
-        if (collision2D.gameObject.CompareTag("Danope"))
+        this.lifemonster -= vidaPerdida;
+        //Zerar as forças sobre o corpo do player
+        player.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        player.gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, 800));
+        if (lifemonster <= 0)
         {
-            lifemonster--;
-            GameObject.Find("Player").gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, 1000));
-            if (lifemonster <= 0)
-            {
-                Destroy(gameObject);
-
-            }
+            Destroy(gameObject);
         }
     }
+
 }
 
