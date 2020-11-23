@@ -35,8 +35,6 @@ public class Player : MonoBehaviour
 
     //Fazer um esquema de caso o player n esteja com a vida máxima ele ganhe vida na fase, e caso ele esteja ele ganhe uma "continue" a mais
 
-
-    // Start is called before the first frame update
     void Start()
     {
         speed = 5.00f;
