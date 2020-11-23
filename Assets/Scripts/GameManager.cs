@@ -1,48 +1,66 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject Painelpausado;
+    private Player player = null;
+    private int pontuacao = 0;
+    [SerializeField]
+    private GameObject painelPausado = null;
     public bool IsPause = false;
+    InterfaceGrafica interfaceGrafica = null;
 
-
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        
+        this.player = GameObject.FindObjectOfType<Player>();
+        this.interfaceGrafica = GameObject.FindObjectOfType<InterfaceGrafica>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (IsPause == false && Input.GetKeyDown(KeyCode.P))
+        if (Input.GetKeyDown(KeyCode.P))
         {
-            Painelpausado.SetActive(true);
-            Time.timeScale = 0;
-            GameObject.Find("GameManager").GetComponent<AudioSource>().mute = true;
-            IsPause = true;
+            Pausar();
         }
-        else if (IsPause == true && Input.GetKeyDown(KeyCode.P))
+    }
+
+    public void Pausar()
+    {
+        GameObject.Find("GameManager").GetComponent<AudioSource>().mute = !IsPause;
+        GameObject.Find("Player").GetComponent<AudioSource>().mute = !IsPause;
+        painelPausado.gameObject.SetActive(!IsPause);
+        Time.timeScale = IsPause ? 1 : 0;
+        IsPause = !IsPause;
+    }
+
+    public void GanharPontoOuVida()
+    {
+
+        //Se a vida for diferente da vida máxima o personagem ganha uma vida
+        if (player.Life != player.vidaMáxima)
         {
-            Painelpausado.SetActive(false);
-            Time.timeScale = 1;
-            GameObject.Find("GameManager").GetComponent<AudioSource>().mute = false;
-            IsPause = false;
+            player.GanharVida(1);
+            interfaceGrafica.AtualizarInterface();
         }
-        
-
-
-        //if (Input.GetKeyDown(KeyCode.E))
-      //  {
-           // GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            //cube.transform.position = new Vector2(0, 0);
-       // }
-
-
+        //Caso contrário ele irá ganhar um ponto
+        else
+        {
+            AdicionarPontos(1);
+            interfaceGrafica.AtualizarInterface();
+        }
 
     }
 
+    public void AdicionarPontos(int pontos)
+    {
+        this.pontuacao += pontos;
+    }
 
+    public int GetPontuacao()
+    {
+        return this.pontuacao;
+    }
 }
