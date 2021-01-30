@@ -10,7 +10,6 @@ public class InterfaceGrafica : MonoBehaviour
     private Text texto = null;
     private GameManager gameManager = null;
 
-    // Start is called before the first frame update
     void Start()
     {
         this.player = GameObject.FindObjectOfType<Player>();

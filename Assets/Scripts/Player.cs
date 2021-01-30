@@ -16,7 +16,7 @@ public class Player : MonoBehaviour
     GameManager gameManager = null;
 
     public int pontuação;
-    public GameObject Bala;
+    public Bala bala;
     public GameObject arma;
     public Vector2 posição, rotação;
 
@@ -104,9 +104,21 @@ public class Player : MonoBehaviour
         //Criar a bala
         if (Input.GetKeyDown(KeyCode.E))
         {
-            //OffSet feito para o personagem n ser empurrado pela bala quando ela for instânciada
-            Vector3 offsetPlayer = new Vector3(this.transform.position.x + 1.5f, this.transform.position.y, this.transform.position.z);
-            GameObject.Instantiate(this.Bala, offsetPlayer, Quaternion.identity);
+            if (this.GetComponent<SpriteRenderer>().flipX)
+            {
+                //OffSet feito para o personagem n ser empurrado pela bala quando ela for instânciada
+                Vector3 offsetPlayer = new Vector3(this.transform.position.x - 1.6f, this.transform.position.y, this.transform.position.z);
+                bala.SetParaDireita(false);
+                GameObject.Instantiate(this.bala, offsetPlayer, Quaternion.identity);
+            }
+            else
+            {
+                //OffSet feito para o personagem n ser empurrado pela bala quando ela for instânciada
+                Vector3 offsetPlayer = new Vector3(this.transform.position.x + 1.6f, this.transform.position.y, this.transform.position.z);
+                bala.SetParaDireita(true);
+                GameObject.Instantiate(this.bala, offsetPlayer, Quaternion.identity); 
+            }
+            
         }
 
         if (Input.GetKeyDown(KeyCode.LeftShift))
@@ -127,23 +139,15 @@ public class Player : MonoBehaviour
         float dist = 0.5f;
         Vector2 vetor = new Vector2(this.transform.position.x, this.transform.position.y - 1.86f);
         hit = Physics2D.Raycast(vetor, Vector2.down, dist);
-        Debug.DrawRay(vetor, hit.point);
+        //Debug.DrawRay(vetor, hit.point);
         if (hit.collider != null)
         {
             //Debug.Log(hit.collider.tag);
             //Debug.Log(hit.collider.transform.position);
             if (hit.collider.CompareTag("Monstros"))
             {
-                try{
-                    InimigoVertical inimigo = hit.collider.gameObject.GetComponent<InimigoVertical>();
-                    inimigo.PerderVida(1);
-                }
-                catch (NullReferenceException)
-                {
-                    InimigoHorizontal inimigo = hit.collider.gameObject.GetComponent<InimigoHorizontal>();
-                    inimigo.PerderVida(1);
-                }
-                
+                Inimigo inimigo = hit.collider.gameObject.GetComponent<Inimigo>();
+                inimigo.PerderVida(1);
                 Debug.Log("Colidiu");
             }
             
